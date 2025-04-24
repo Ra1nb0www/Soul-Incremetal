@@ -25,7 +25,10 @@ turtle.bgcolor("black")
 turtle.pencolor("white")
 screen2 = turtle.Screen()
 screen2.title("Fragile Soul")
-file_names = ["currency", "level", "era", "upgrade_1"]
+file_names = ["currency", "level", "era", "upgrade_1", "upgrade_2", "orbs"]
+switch1 = True
+switch2 = True
+switch3 = True
 
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -37,20 +40,50 @@ def save(file):
 
 def wipe_files():
     for file in file_names:
-        with open((file) + ".txt", "w") as file:
-            file.write(str(0))
+        if file != "orbs":
+            with open((file) + ".txt", "w") as file:
+                file.write(str(0))
+        else:
+            num = 0
+            with open((file) + ".txt", "w") as file:
+                values = []
+                for i in range(3):
+                    values.append(0)
+                for line in values:
+                    file.write(f"{str(line)}\n")
 
-def triangle():
-    turtle.forward(10 + level)
-    turtle.left(10 + (era * 5))
-    for i in range(3):
-        turtle.pendown()
-        turtle.forward(120-(10 + level))
-        turtle.left(120)
-    turtle.penup()
+def triangle(signal1, signal2, signal3):
+    screen2.tracer(0) 
+    turtle.clear()
+    for i in range(level):
+        color = 1
+        turtle.forward(10 + level)
+        turtle.left(10 + (era + 5))
+        for i in range(3):
+            if color == 1:
+                turtle.pencolor("blue")
+            elif color == 2:
+                turtle.pencolor("green")
+            elif color == 3:
+                turtle.pencolor("red")
+            if signal1 == True and color == 1:
+                turtle.pendown()
+            if signal2 == True and color == 2:
+                turtle.pendown()
+            if signal3 == True and color == 3:
+                turtle.pendown()
+            turtle.forward(120-(10 + level))
+            turtle.left(120)
+            turtle.penup()
+            if color == 3:
+                color = 0
+            color +=1
+        turtle.penup()
+        screen2.update()
 
 def load_files():
-    global currency, level, era, upgrade_1
+    global currency, level, era, upgrade_1, upgrade_2, orbs
+    orbs = []
     try:
         with open("currency.txt", "r") as file:
             currency = int(file.read())
@@ -60,6 +93,11 @@ def load_files():
             era = int(file.read())
         with open("upgrade_1.txt", "r") as file:
             upgrade_1 = int(file.read())
+        with open("upgrade_2.txt", "r") as file:
+            upgrade_2 = int(file.read())
+        with open("orbs.txt", "r") as file:
+            for line in orbs:
+                orbs.append(int(line))
     except:
         wipe_files()
     finally:
@@ -71,6 +109,12 @@ def load_files():
             era = int(file.read())
         with open("upgrade_1.txt", "r") as file:
             upgrade_1 = int(file.read())
+        with open("upgrade_2.txt", "r") as file:
+            upgrade_2 = int(file.read())
+        with open("orbs.txt", "r") as file:
+            for line in orbs:
+                orbs.append(line)
+
 
 def pytext(text, x, y, font_size, color1, color2):
     font = pygame.font.Font('freesansbold.ttf', font_size)
@@ -80,7 +124,7 @@ def pytext(text, x, y, font_size, color1, color2):
     screen.blit(text, textRect)
 
 def main():
-    global currency, level, era, upgrade_1
+    global currency, level, era, upgrade_1, upgrade_2
     load_files()
     pygame.display.set_caption(f"Incremental")
     if level < 1:
@@ -89,21 +133,43 @@ def main():
     running = True
     start = True
     update_time = 0
-    for i in range(level):
-        triangle()
+    darker1 = 1
+    darker2 = 1
+    darker3 = 1
+    dark1 = False
+    dark2 = False
+    dark3 = False
+    switch1 = True
+    switch2 = True
+    switch3 = True
+    triangle(switch1, switch2, switch3)
     if era < 0:
         era = 1
         save("era")
     clear_console()
     while running:
         load_files()
-        TcT = 1000
-        new_era = (75)**era
-        upgrade_1_rect = [
-            {"rect": pygame.Rect(300, 100, 200, 100), "color": (170, 170, 170), "action": "rect1_clicked"}
+        level_scale = (25+level)**(int(round(level**1.05)))
+        TcT = 1000/(orbs[1]+1)
+        new_era = (75 * era)**(era**3)
+        boost2 = upgrade_2
+        boost1 = (upgrade_1) * (boost2 + 1)
+        upgrade_rect = [
+            {"rect": pygame.Rect(300, 100, 200, 100), "color": (170, 170, 170), "action": "rect1_clicked"},
+            {"rect": pygame.Rect(520, 100, 200, 100), "color": (170, 170, 170), "action": "rect2_clicked"}
         ]
+        switch_rect = [
+            {"rect": pygame.Rect(100, 400, 50, 50), "color": (0, 0, 255 * darker1), "action": "rect1_clicked"},
+            {"rect": pygame.Rect(100, 500, 50, 50), "color": (0, 255 * darker2, 0), "action": "rect2_clicked"},
+            {"rect": pygame.Rect(100, 600, 50, 50), "color": (255 * darker3, 0, 0), "action": "rect3_clicked"}
+        ]
+        orb_rect = [
+
+        ]
+        cost1 = (round((upgrade_1 * 10)+10**1.25))
+        cost2 = (round((upgrade_2 * 5000)+10000**1.5))
         if start == True:
-            for rectangle in upgrade_1_rect:
+            for rectangle in upgrade_rect:
                 pygame.draw.rect(screen, rectangle["color"], rectangle["rect"])
             start = False
         for event in pygame.event.get():
@@ -111,48 +177,92 @@ def main():
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                for item in upgrade_1_rect:
+                for item in upgrade_rect:
                     if item["rect"].collidepoint(mouse_pos):
                         if item["action"] == "rect1_clicked":
-                            if currency >= (round((currency)+currency*0.75)):
+                            if currency >= cost1:
                                 upgrade_1 += 1
-                                currency -= (round((currency)+currency*0.75))
+                                currency -= cost1
                                 save("upgrade_1")
                                 save("currency")
+                        if level == 5:
+                            if item["action"] == "rect2_clicked":
+                                if currency >= cost2:
+                                    upgrade_2 += 1
+                                    currency -= cost2
+                                    save("upgrade_2")
+                                    save("currency")
+                for item in switch_rect:
+                    if item["rect"].collidepoint(mouse_pos):
+                        if item["action"] == "rect1_clicked" and dark1 == False:
+                            darker1 = 1/2
+                            dark1 = True
+                            switch1 = False
+                        elif item["action"] == "rect1_clicked" and dark1 == True:
+                            darker1 = 1
+                            dark1 = False
+                            switch1 = True
+                        if item["action"] == "rect2_clicked" and dark2 == False:
+                            darker2 = 1/2
+                            dark2 = True
+                            switch2 = False
+                        elif item["action"] == "rect2_clicked" and dark2 == True:
+                            darker2 = 1
+                            dark2 = False
+                            switch2 = True
+                        if item["action"] == "rect3_clicked" and dark3 == False:
+                            darker3 = 1/2
+                            dark3 = True
+                            switch3 = False
+                        elif item["action"] == "rect3_clicked" and dark3 == True:
+                            darker3 = 1
+                            dark3 = False
+                            switch3 = True
+                        triangle(switch1, switch2, switch3)
+
         current_time = pygame.time.get_ticks()
 
         if current_time - update_time > TcT:
             update_time = current_time
-            currency += ((1 + upgrade_1) * level)**era
+            currency += ((1 + boost1) * level)**era
             save("currency")
         
-        if currency >= (25)**(int(round(level)/2)):
-            turtle.clear()
+        if currency >= level_scale:
             level += 1
-            for i in range(level):
-                triangle()
+            triangle(switch1, switch2, switch3)
             save("level")
             save("currency")
         
         if level >= new_era:
             era += 1
             level = 1
-            turtle.clear()
             turtle.up()
             turtle.goto(0, 0)
             save("level")
             save("era")
         screen.fill(background_color)
-        for rectangle in upgrade_1_rect:
-            pygame.draw.rect(screen, rectangle["color"], rectangle["rect"])
-        pytext(f"Soul Strength: {upgrade_1}", 400, 125, (22-round(upgrade_1**0.1)), black, greyish)
-        pytext(f"Energy per second:", 400, 150, 15, black, greyish)
-        pytext(f"+ 1 per level", 400, 175, 15, black, greyish)
+        if level >= 2:
+            pygame.draw.rect(screen, upgrade_rect[0]["color"], upgrade_rect[0]["rect"])
+            pytext(f"Soul Strength: {upgrade_1}", 400, 120, (22-round(upgrade_1**0.01)), black, greyish)
+            pytext(f"Energy per second:", 400, 145, 15, black, greyish)
+            pytext(f"+ 1 per level (+{boost1})", 400, 165, (15-round(boost1**0.01)), black, greyish)
+            pytext(f"Cost: {cost1}", 400, 190, 15, black, greyish)
+        if level >= 5:
+            pygame.draw.rect(screen, upgrade_rect[1]["color"], upgrade_rect[1]["rect"])
+            pytext(f"Soul Aura: {upgrade_2}", 620, 120, (22-round(upgrade_2**0.01)), black, greyish)
+            pytext(f"Strength Base:", 620, 145, 15, black, greyish)
+            pytext(f"Boosts by +1 (+{boost2 + 1})", 620, 165, (15-round(boost2**0.01)), black, greyish)
+            pytext(f"Cost: {cost2}", 620, 190, 15, black, greyish)
         #------
-        pytext(f"Energy: {currency}", 150, 100, (28-round(currency**0.1)), white, black)
+        pytext(f"Energy: {currency}", 150, 100, (28-round(currency**0.01)), white, black)
+        pytext(f"(Energy Per Sec: {((1 + boost1) * level)**era})", 150, 125, 16, white, black)
         pytext(f"Soul Level: {level}", 150, 150, 28, white, black)
         pytext(f"Soul Era: {era}", 150, 200, 28, white, black)
+        pytext(f"(Next Level at: {level_scale} Energy)", 150, 175, 16, white, black)
+        pytext(f"Soul Switches:", 125, 380, 15, white, black)
+        for item in switch_rect:
+            pygame.draw.rect(screen, item["color"], item["rect"])
         pygame.display.flip()
         clock.tick(60)
-main()
-#wipe_files()
+#main()
+wipe_files()
