@@ -58,11 +58,12 @@ def triangle(signal1, signal2, signal3):
     turtle.clear()
     for i in range(level):
         color = 1
-        turtle.up()
+        turtle.penup()
         turtle.forward(10 + level)
-        turtle.down()
+        turtle.pendown()
         turtle.left(10 + (era + 5))
         for i in range(3):
+            turtle.penup()
             if color == 1:
                 turtle.pencolor("blue")
             elif color == 2:
@@ -77,7 +78,6 @@ def triangle(signal1, signal2, signal3):
                 turtle.pendown()
             turtle.forward(120-(10 + level))
             turtle.left(120)
-            turtle.penup()
             if color == 3:
                 color = 0
             color +=1
@@ -136,19 +136,20 @@ def call_orb(orb_level, orby):
         activated1 = False
     if orb_level >= 1 and orbs[0] != 1:
         if activated1 == False:
-            orb_rect.append({"color": light_blue, "action#": "1"})
-            orb_rect.append({"color": light_blue, "action#": "2"})
+            orb_rect.append({"Text": "Doubles Speed", "color": light_blue, "action#": "1"})
+            orb_rect.append({"Text": "Doubles Speed", "color": green, "action#": "2"})
             activated1 == True
     elif orb_level >= 1 and orbs[0] == 1:
         try:
-            orb_rect.remove({"color": light_blue, "action#": "1"})
-            orb_rect.remove({"color": light_blue, "action#": "2"})
+            orb_rect.remove({"Text": "Doubles Speed", "color": light_blue, "action#": "1"})
+            orb_rect.remove({"Text": "Doubles Speed", "color": green, "action#": "2"})
         except: 
             print("")
     orby = 0
     use_orb = []
     for item in orb_rect:
         pygame.draw.rect(screen, item["color"], pygame.Rect(1400, 100 + orby, 200, 100))
+        pytext(item["Text"], 1500, 150 + orby, 20, black, item["color"])
         use_orb.append({"rect": pygame.Rect(1400, 100 + orby, 200, 100), "color": light_blue, "action": f"rect{item["action#"]}_clicked"})
         orby += 120
     return use_orb
