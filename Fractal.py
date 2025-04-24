@@ -112,9 +112,9 @@ def load_files():
         with open("upgrade_2.txt", "r") as file:
             upgrade_2 = int(file.read())
         with open("orbs.txt", "r") as file:
-            for line in orbs:
-                orbs.append(line)
-
+            pre_orbs = (file.readlines())
+            for x in pre_orbs:
+                orbs.append(int(x))
 
 def pytext(text, x, y, font_size, color1, color2):
     font = pygame.font.Font('freesansbold.ttf', font_size)
@@ -123,8 +123,11 @@ def pytext(text, x, y, font_size, color1, color2):
     textRect.center = (x, y)
     screen.blit(text, textRect)
 
+def call_orb(orb_level):
+    if orb_level >= 1:
+        print("in progress...")
 def main():
-    global currency, level, era, upgrade_1, upgrade_2
+    global currency, level, era, upgrade_1, upgrade_2, orbs
     load_files()
     pygame.display.set_caption(f"Incremental")
     if level < 1:
@@ -150,7 +153,7 @@ def main():
     while running:
         load_files()
         level_scale = (25+level)**(int(round(level**1.05)))
-        TcT = 1000/(orbs[1]+1)
+        TcT = 1000/(orbs[0]+1)
         new_era = (75 * era)**(era**3)
         boost2 = upgrade_2
         boost1 = (upgrade_1) * (boost2 + 1)
@@ -238,8 +241,9 @@ def main():
             level = 1
             turtle.up()
             turtle.goto(0, 0)
-            save("level")
-            save("era")
+            for i in globals():
+                i = 0
+                save(f"{i}")
         screen.fill(background_color)
         if level >= 2:
             pygame.draw.rect(screen, upgrade_rect[0]["color"], upgrade_rect[0]["rect"])
@@ -247,12 +251,13 @@ def main():
             pytext(f"Energy per second:", 400, 145, 15, black, greyish)
             pytext(f"+ 1 per level (+{boost1})", 400, 165, (15-round(boost1**0.01)), black, greyish)
             pytext(f"Cost: {cost1}", 400, 190, 15, black, greyish)
-        if level >= 5:
+        if level >= 3:
             pygame.draw.rect(screen, upgrade_rect[1]["color"], upgrade_rect[1]["rect"])
             pytext(f"Soul Aura: {upgrade_2}", 620, 120, (22-round(upgrade_2**0.01)), black, greyish)
             pytext(f"Strength Base:", 620, 145, 15, black, greyish)
             pytext(f"Boosts by +1 (+{boost2 + 1})", 620, 165, (15-round(boost2**0.01)), black, greyish)
             pytext(f"Cost: {cost2}", 620, 190, 15, black, greyish)
+            call_orb(1)
         #------
         pytext(f"Energy: {currency}", 150, 100, (28-round(currency**0.01)), white, black)
         pytext(f"(Energy Per Sec: {((1 + boost1) * level)**era})", 150, 125, 16, white, black)
@@ -264,5 +269,5 @@ def main():
             pygame.draw.rect(screen, item["color"], item["rect"])
         pygame.display.flip()
         clock.tick(60)
-#main()
-wipe_files()
+main()
+#wipe_files()
