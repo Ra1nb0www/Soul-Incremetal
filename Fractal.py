@@ -36,8 +36,14 @@ def clear_console():
 
 def save(file):
     x = globals()[file]
-    with open((file) + ".txt", "w") as file:
-        file.write(str(x))
+    if file != "orbs":
+        with open((file) + ".txt", "w") as file:
+            file.write(str(x))
+    else:
+        with open("orbs.txt", "w") as file:
+            for line in orbs:
+                file.write(str(f"{line}\n"))
+
 
 def wipe_files():
     for file in file_names:
@@ -128,28 +134,33 @@ def pytext(text, x, y, font_size, color1, color2):
     screen.blit(text, textRect)
 
 def call_orb(orb_level, orby):
+    orb_store = [
+        {"subfont": 16, "font": 22, "subText": "Doubles Speed", "Text": "Doubles Speed", "color": light_blue, "action#": "1"},
+        {"subfont": 16, "font": 22, "subText": "Doubles Speed", "Text": "Doubles Speed", "color": green, "action#": "2"}
+    ]
     orb_rect = []
     try:
         if activated1 == True:
             print("")
     except:
         activated1 = False
-    if orb_level >= 1 and orbs[0] != 1:
+    if orb_level >= 1 and orbs[0] < 1:
         if activated1 == False:
-            orb_rect.append({"Text": "Doubles Speed", "color": light_blue, "action#": "1"})
-            orb_rect.append({"Text": "Doubles Speed", "color": green, "action#": "2"})
+            orb_rect.append(orb_store[0])
+            orb_rect.append(orb_store[1])
             activated1 == True
-    elif orb_level >= 1 and orbs[0] == 1:
+    elif orb_level >= 1 and orbs[0] > 0:
         try:
-            orb_rect.remove({"Text": "Doubles Speed", "color": light_blue, "action#": "1"})
-            orb_rect.remove({"Text": "Doubles Speed", "color": green, "action#": "2"})
+            orb_rect.remove(orb_store[0])
+            orb_rect.remove(orb_store[1])
         except: 
             print("")
     orby = 0
     use_orb = []
     for item in orb_rect:
         pygame.draw.rect(screen, item["color"], pygame.Rect(1400, 100 + orby, 200, 100))
-        pytext(item["Text"], 1500, 150 + orby, 20, black, item["color"])
+        pytext(item["Text"], 1500, 125 + orby, item["font"], black, item["color"])
+        pytext(item["subText"], 1500, 150 + orby, item["subfont"], black, item["color"])
         use_orb.append({"rect": pygame.Rect(1400, 100 + orby, 200, 100), "color": light_blue, "action": f"rect{item["action#"]}_clicked"})
         orby += 120
     return use_orb
@@ -191,6 +202,9 @@ def main():
     switch1 = True
     switch2 = True
     switch3 = True
+    orb_cost = [
+        5000
+    ]
     triangle(switch1, switch2, switch3)
     if era < 1:
         era = 1
@@ -198,7 +212,7 @@ def main():
     clear_console()
     while running:
         load_files()
-        level_scale = (25+level)**(int(round(level**1.05)))
+        level_scale = (10**level)
         TcT = 1000/(orbs[0]+1)
         new_era = (75 * era)**(era**3)
         boost2 = upgrade_2
@@ -213,7 +227,7 @@ def main():
             {"rect": pygame.Rect(100, 600, 50, 50), "color": (255 * darker3, 0, 0), "action": "rect3_clicked"}
         ]
         cost1 = (round((upgrade_1 * 10)+10**1.25))
-        cost2 = (round(upgrade_2**(2.5+(upgrade_2/2))))
+        cost2 = (round(upgrade_2 + 1**(2.5+((upgrade_2 + 2)/2))))
         if start == True:
             for rectangle in upgrade_rect:
                 pygame.draw.rect(screen, rectangle["color"], rectangle["rect"])
@@ -265,6 +279,14 @@ def main():
                             dark3 = False
                             switch3 = True
                         triangle(switch1, switch2, switch3)
+                for item in orb_rect:
+                    if item["rect"].collidepoint(mouse_pos):
+                        if item ["action"] == "rect1_clicked" and currency >= orb_cost[0]:
+                            if orbs[0] != 1:
+                                currency -= orb_cost[0]
+                                orbs[0] = 1
+                                save("orbs")
+                                save("currency")
 
         current_time = pygame.time.get_ticks()
 
@@ -288,7 +310,7 @@ def main():
             pygame.draw.rect(screen, upgrade_rect[0]["color"], upgrade_rect[0]["rect"])
             pytext(f"Soul Strength: {upgrade_1}", 400, 120, (22-round(upgrade_1**0.01)), black, greyish)
             pytext(f"Energy per second:", 400, 145, 15, black, greyish)
-            pytext(f"+ {boost2 + 1} per level (+{boost1})", 400, 165, (15-round(boost1**0.01)), black, greyish)
+            pytext(f"+ {boost2 + 1} per level (+{(boost1 + 1) * level})", 400, 165, (15-round(boost1**0.01)), black, greyish)
             pytext(f"Cost: {cost1}", 400, 190, 15, black, greyish)
         if level >= 3:
             pygame.draw.rect(screen, upgrade_rect[1]["color"], upgrade_rect[1]["rect"])
