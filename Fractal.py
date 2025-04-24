@@ -155,6 +155,7 @@ def call_orb(orb_level, orby):
             orb_rect.remove(orb_store[1])
         except: 
             print("")
+            clear_console()
     orby = 0
     use_orb = []
     for item in orb_rect:
@@ -227,7 +228,7 @@ def main():
             {"rect": pygame.Rect(100, 600, 50, 50), "color": (255 * darker3, 0, 0), "action": "rect3_clicked"}
         ]
         cost1 = (round((upgrade_1 * 10)+10**1.25))
-        cost2 = (round(upgrade_2 + 1**(2.5+((upgrade_2 + 2)/2))))
+        cost2 = (round((upgrade_2 + 1)**(2.5+((upgrade_2 + 2)/2))))
         if start == True:
             for rectangle in upgrade_rect:
                 pygame.draw.rect(screen, rectangle["color"], rectangle["rect"])
