@@ -19,6 +19,7 @@ green = (0, 255, 0)
 blue = (0, 0, 128)
 black = (0, 0, 0)
 greyish = (170, 170, 170)
+light_blue = (0, 200, 250)
 turtle.speed(0)
 turtle.hideturtle()
 turtle.bgcolor("black")
@@ -57,7 +58,9 @@ def triangle(signal1, signal2, signal3):
     turtle.clear()
     for i in range(level):
         color = 1
+        turtle.up()
         turtle.forward(10 + level)
+        turtle.down()
         turtle.left(10 + (era + 5))
         for i in range(3):
             if color == 1:
@@ -96,7 +99,8 @@ def load_files():
         with open("upgrade_2.txt", "r") as file:
             upgrade_2 = int(file.read())
         with open("orbs.txt", "r") as file:
-            for line in orbs:
+            pre_orbs = (file.readlines())
+            for line in pre_orbs:
                 orbs.append(int(line))
     except:
         wipe_files()
@@ -123,9 +127,50 @@ def pytext(text, x, y, font_size, color1, color2):
     textRect.center = (x, y)
     screen.blit(text, textRect)
 
-def call_orb(orb_level):
-    if orb_level >= 1:
-        print("in progress...")
+def call_orb(orb_level, orby):
+    orb_rect = []
+    try:
+        if activated1 == True:
+            print("")
+    except:
+        activated1 = False
+    if orb_level >= 1 and orbs[0] != 1:
+        if activated1 == False:
+            orb_rect.append({"color": light_blue, "action#": "1"})
+            orb_rect.append({"color": light_blue, "action#": "2"})
+            activated1 == True
+    elif orb_level >= 1 and orbs[0] == 1:
+        try:
+            orb_rect.remove({"color": light_blue, "action#": "1"})
+            orb_rect.remove({"color": light_blue, "action#": "2"})
+        except: 
+            print("")
+    orby = 0
+    use_orb = []
+    for item in orb_rect:
+        pygame.draw.rect(screen, item["color"], pygame.Rect(1400, 100 + orby, 200, 100))
+        use_orb.append({"rect": pygame.Rect(1400, 100 + orby, 200, 100), "color": light_blue, "action": f"rect{item["action#"]}_clicked"})
+        orby += 120
+    return use_orb
+    
+def start_new_era():
+    global currency, level, era, upgrade_1, upgrade_2, orbs
+    era += 1
+    level = 1
+    turtle.up()
+    turtle.goto(0, 0)
+    for file in file_names:
+        if file != "era" and file != orbs:
+            with open((file) + ".txt", "w") as file:
+                file.write(str(0))
+        elif file == orbs:
+            with open((file) + ".txt", "w") as file:
+                values = []
+                for i in range(3):
+                    values.append(0)
+                for line in values:
+                    file.write(f"{str(line)}\n")
+
 def main():
     global currency, level, era, upgrade_1, upgrade_2, orbs
     load_files()
@@ -146,7 +191,7 @@ def main():
     switch2 = True
     switch3 = True
     triangle(switch1, switch2, switch3)
-    if era < 0:
+    if era < 1:
         era = 1
         save("era")
     clear_console()
@@ -166,11 +211,8 @@ def main():
             {"rect": pygame.Rect(100, 500, 50, 50), "color": (0, 255 * darker2, 0), "action": "rect2_clicked"},
             {"rect": pygame.Rect(100, 600, 50, 50), "color": (255 * darker3, 0, 0), "action": "rect3_clicked"}
         ]
-        orb_rect = [
-
-        ]
         cost1 = (round((upgrade_1 * 10)+10**1.25))
-        cost2 = (round((upgrade_2 * 5000)+10000**1.5))
+        cost2 = (round(upgrade_2**(2.5+(upgrade_2/2))))
         if start == True:
             for rectangle in upgrade_rect:
                 pygame.draw.rect(screen, rectangle["color"], rectangle["rect"])
@@ -188,7 +230,7 @@ def main():
                                 currency -= cost1
                                 save("upgrade_1")
                                 save("currency")
-                        if level == 5:
+                        if level >= 3:
                             if item["action"] == "rect2_clicked":
                                 if currency >= cost2:
                                     upgrade_2 += 1
@@ -237,27 +279,24 @@ def main():
             save("currency")
         
         if level >= new_era:
-            era += 1
-            level = 1
-            turtle.up()
-            turtle.goto(0, 0)
-            for i in globals():
-                i = 0
-                save(f"{i}")
+            start_new_era()
+
         screen.fill(background_color)
+        orb_level = 0
         if level >= 2:
             pygame.draw.rect(screen, upgrade_rect[0]["color"], upgrade_rect[0]["rect"])
             pytext(f"Soul Strength: {upgrade_1}", 400, 120, (22-round(upgrade_1**0.01)), black, greyish)
             pytext(f"Energy per second:", 400, 145, 15, black, greyish)
-            pytext(f"+ 1 per level (+{boost1})", 400, 165, (15-round(boost1**0.01)), black, greyish)
+            pytext(f"+ {boost2 + 1} per level (+{boost1})", 400, 165, (15-round(boost1**0.01)), black, greyish)
             pytext(f"Cost: {cost1}", 400, 190, 15, black, greyish)
         if level >= 3:
             pygame.draw.rect(screen, upgrade_rect[1]["color"], upgrade_rect[1]["rect"])
             pytext(f"Soul Aura: {upgrade_2}", 620, 120, (22-round(upgrade_2**0.01)), black, greyish)
             pytext(f"Strength Base:", 620, 145, 15, black, greyish)
-            pytext(f"Boosts by +1 (+{boost2 + 1})", 620, 165, (15-round(boost2**0.01)), black, greyish)
+            pytext(f"Boosts by +1 (+{boost2})", 620, 165, (15-round(boost2**0.01)), black, greyish)
             pytext(f"Cost: {cost2}", 620, 190, 15, black, greyish)
-            call_orb(1)
+            orb_level = 1
+        
         #------
         pytext(f"Energy: {currency}", 150, 100, (28-round(currency**0.01)), white, black)
         pytext(f"(Energy Per Sec: {((1 + boost1) * level)**era})", 150, 125, 16, white, black)
@@ -267,6 +306,8 @@ def main():
         pytext(f"Soul Switches:", 125, 380, 15, white, black)
         for item in switch_rect:
             pygame.draw.rect(screen, item["color"], item["rect"])
+        orby = 0
+        orb_rect = call_orb(orb_level, orby)
         pygame.display.flip()
         clock.tick(60)
 main()
