@@ -7,6 +7,7 @@ import sys
 import math
 import random
 import time
+#test
 pygame.init()
 info = pygame.display.Info()
 screen_width = info.current_w
