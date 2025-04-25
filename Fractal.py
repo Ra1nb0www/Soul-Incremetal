@@ -67,7 +67,7 @@ def triangle(signal1, signal2, signal3):
         turtle.penup()
         turtle.forward(10 + level)
         turtle.pendown()
-        turtle.left(10 + (era + 5))
+        turtle.left(10 + (era + 7.5))
         for i in range(3):
             turtle.penup()
             if color == 1:
@@ -135,34 +135,26 @@ def pytext(text, x, y, font_size, color1, color2):
 
 def call_orb(orb_level, orby):
     orb_store = [
-        {"subfont": 16, "font": 22, "subText": "Doubles Speed", "Text": "Doubles Speed", "color": light_blue, "action#": "1"},
-        {"subfont": 16, "font": 22, "subText": "Doubles Speed", "Text": "Doubles Speed", "color": green, "action#": "2"}
+        {"subfont": 16, "font": 22, "subText": "Doubles Speed", "Text": "Doubles Speed", "color": light_blue, "action#": 1, "level": 1, "orb_num": 1, "int": 1, "cost": 5000, "cost_font": 18},
+        {"subfont": 16, "font": 22, "subText": "Doubles Speed", "Text": "Doubles Speed", "color": green, "action#": 2, "level": 1, "orb_num": 1, "int": 1, "cost": 5000, "cost_font": 18}
     ]
     orb_rect = []
-    try:
-        if activated1 == True:
-            print("")
-    except:
-        activated1 = False
-    if orb_level >= 1 and orbs[0] < 1:
-        if activated1 == False:
-            orb_rect.append(orb_store[0])
-            orb_rect.append(orb_store[1])
-            activated1 == True
-    elif orb_level >= 1 and orbs[0] > 0:
-        try:
-            orb_rect.remove(orb_store[0])
-            orb_rect.remove(orb_store[1])
-        except: 
-            print("")
-            clear_console()
+    for orb in orb_store:
+        if orb_level >= orb["level"] and orbs[orb["orb_num"]-1] < orb["int"]:
+            orb_rect.append(orb_store[orb["action#"] - 1])
+        elif orbs[orb["orb_num"] - 1] <= orb["int"]:
+            try:
+                orb_rect.remove(orb_store[orb["action#"] - 1])
+            except:
+                filler = 0
     orby = 0
     use_orb = []
     for item in orb_rect:
         pygame.draw.rect(screen, item["color"], pygame.Rect(1400, 100 + orby, 200, 100))
         pytext(item["Text"], 1500, 125 + orby, item["font"], black, item["color"])
         pytext(item["subText"], 1500, 150 + orby, item["subfont"], black, item["color"])
-        use_orb.append({"rect": pygame.Rect(1400, 100 + orby, 200, 100), "color": light_blue, "action": f"rect{item["action#"]}_clicked"})
+        pytext(f"Costs: {item["cost"]}", 1500, 170 + orby, item["cost_font"], black, item["color"])
+        use_orb.append({"rect": pygame.Rect(1400, 100 + orby, 200, 100), "color": light_blue, "action": f"rect{item["action#"]}_clicked", "cost": item["cost"]})
         orby += 120
     return use_orb
     
@@ -203,9 +195,6 @@ def main():
     switch1 = True
     switch2 = True
     switch3 = True
-    orb_cost = [
-        5000
-    ]
     triangle(switch1, switch2, switch3)
     if era < 1:
         era = 1
@@ -213,9 +202,9 @@ def main():
     clear_console()
     while running:
         load_files()
-        level_scale = (10**level)
+        level_scale = (10)**level
         TcT = 1000/(orbs[0]+1)
-        new_era = (75 * era)**(era**3)
+        new_era = (era*240)/(era+1)
         boost2 = upgrade_2
         boost1 = (upgrade_1) * (boost2 + 1)
         upgrade_rect = [
@@ -282,9 +271,9 @@ def main():
                         triangle(switch1, switch2, switch3)
                 for item in orb_rect:
                     if item["rect"].collidepoint(mouse_pos):
-                        if item ["action"] == "rect1_clicked" and currency >= orb_cost[0]:
+                        if item ["action"] == "rect1_clicked" and currency >= item["cost"]:
                             if orbs[0] != 1:
-                                currency -= orb_cost[0]
+                                currency -= item["cost"]
                                 orbs[0] = 1
                                 save("orbs")
                                 save("currency")
@@ -311,7 +300,7 @@ def main():
             pygame.draw.rect(screen, upgrade_rect[0]["color"], upgrade_rect[0]["rect"])
             pytext(f"Soul Strength: {upgrade_1}", 400, 120, (22-round(upgrade_1**0.01)), black, greyish)
             pytext(f"Energy per second:", 400, 145, 15, black, greyish)
-            pytext(f"+ {boost2 + 1} per level (+{(boost1 + 1) * level})", 400, 165, (15-round(boost1**0.01)), black, greyish)
+            pytext(f"+ {(boost2 + 1) * level} per level (+{(boost1 + 1) * level})", 400, 165, (15-round(boost1**0.01)), black, greyish)
             pytext(f"Cost: {cost1}", 400, 190, 15, black, greyish)
         if level >= 3:
             pygame.draw.rect(screen, upgrade_rect[1]["color"], upgrade_rect[1]["rect"])
