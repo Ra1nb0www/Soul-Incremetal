@@ -357,4 +357,3 @@ def main():
         pygame.display.flip()
         clock.tick(60)
 main()
-#wipe_files()
