@@ -16,10 +16,12 @@ background_color = (0, 0, 0)
 clock = pygame.time.Clock()
 white = (255, 255, 255)
 green = (0, 255, 0)
+darker_green = (0, 200, 0)
 blue = (0, 0, 128)
 black = (0, 0, 0)
 greyish = (170, 170, 170)
 light_blue = (0, 200, 250)
+red = (200, 0, 0)
 turtle.speed(0)
 turtle.hideturtle()
 turtle.bgcolor("black")
@@ -189,7 +191,32 @@ def main():
         era = 1
         save("era")
     clear_console()
+    menu = True
     while running:
+        while menu == True:
+            menu_rect = [
+                {"rect": pygame.Rect(300, 100, 200, 100), "color": darker_green, "action": "rect1_clicked"},
+                {"rect": pygame.Rect(520, 100, 200, 100), "color": red, "action": "rect2_clicked"}
+            ]
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    for item in menu_rect:
+                        if item["rect"].collidepoint(mouse_pos):
+                            if item["action"] == "rect1_clicked":
+                                menu = False
+                            if item["action"] == "rect2_clicked":
+                                wipe_files()
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            screen.fill(background_color)
+            for item in menu_rect:
+                pygame.draw.rect(screen, item["color"], item["rect"])
+            pytext(f"Wipe Save", 620, 145, 20, black, red)
+            pytext(f"Start", 400, 145, 25, black, darker_green)
+
+            pygame.display.flip()
         load_files()
         level_scale = (10)**level
         TcT = 1000/(orbs[0]+1)
@@ -214,6 +241,9 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    menu = True
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 for item in upgrade_rect:
