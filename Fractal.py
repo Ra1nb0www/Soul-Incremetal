@@ -60,6 +60,7 @@ def wipe_files():
                     values.append(0)
                 for line in values:
                     file.write(f"{str(line)}\n")
+    main()
 
 def triangle(signal1, signal2, signal3):
     screen2.tracer(0) 
