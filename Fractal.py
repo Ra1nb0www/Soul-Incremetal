@@ -193,8 +193,13 @@ def main():
         save("era")
     clear_console()
     menu = True
+    confirmation = False
     while running:
         while menu == True:
+            confirmation_rect = [
+                {"rect": pygame.Rect(800, 500, 400, 300), "color": greyish, "action": "rect1_clicked"},
+                {"rect": pygame.Rect(950, 600, 50, 200), "color": darker_green, "action": "rect2_clicked"}
+            ]
             menu_rect = [
                 {"rect": pygame.Rect(300, 100, 200, 100), "color": darker_green, "action": "rect1_clicked"},
                 {"rect": pygame.Rect(520, 100, 200, 100), "color": red, "action": "rect2_clicked"}
@@ -207,6 +212,10 @@ def main():
                             if item["action"] == "rect1_clicked":
                                 menu = False
                             if item["action"] == "rect2_clicked":
+                                confirmation = True
+                    for item in confirmation_rect:
+                        if item["rect"].collidepoint(mouse_pos):
+                            if item["action"] == "rect2_clicked":
                                 wipe_files()
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -216,7 +225,9 @@ def main():
                 pygame.draw.rect(screen, item["color"], item["rect"])
             pytext(f"Wipe Save", 620, 145, 20, black, red)
             pytext(f"Start", 400, 145, 25, black, darker_green)
-
+            if confirmation == True:
+                for item in confirmation_rect:
+                    pygame.draw.rect(screen, item["color"], item["rect"])
             pygame.display.flip()
         load_files()
         level_scale = (10)**level

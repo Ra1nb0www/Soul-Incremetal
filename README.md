@@ -1,5 +1,5 @@
 # Upcoming:
-Menu with save wiping and game exit + start up
+Menu with game exit + make it good
 Automation Upgrade +  No money loss upgrade
 Prestige Layer
 Scaling Update
