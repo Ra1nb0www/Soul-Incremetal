@@ -93,38 +93,27 @@ def triangle(signal1, signal2, signal3):
 def load_files():
     global currency, level, era, upgrade_1, upgrade_2, orbs
     orbs = []
-    try:
-        with open("currency.txt", "r") as file:
-            currency = int(file.read())
-        with open("level.txt", "r") as file:
-            level = int(file.read())
-        with open("era.txt", "r") as file:
-            era = int(file.read())
-        with open("upgrade_1.txt", "r") as file:
-            upgrade_1 = int(file.read())
-        with open("upgrade_2.txt", "r") as file:
-            upgrade_2 = int(file.read())
-        with open("orbs.txt", "r") as file:
-            pre_orbs = (file.readlines())
-            for line in pre_orbs:
-                orbs.append(int(line))
-    except:
-        wipe_files()
-    finally:
-        with open("currency.txt", "r") as file:
-            currency = int(file.read())
-        with open("level.txt", "r") as file:
-            level = int(file.read())
-        with open("era.txt", "r") as file:
-            era = int(file.read())
-        with open("upgrade_1.txt", "r") as file:
-            upgrade_1 = int(file.read())
-        with open("upgrade_2.txt", "r") as file:
-            upgrade_2 = int(file.read())
-        with open("orbs.txt", "r") as file:
-            pre_orbs = (file.readlines())
-            for x in pre_orbs:
-                orbs.append(int(x))
+    Loaded = False
+    while Loaded == False:
+        try:
+            with open("currency.txt", "r") as file:
+                currency = int(file.read())
+            with open("level.txt", "r") as file:
+                level = int(file.read())
+            with open("era.txt", "r") as file:
+                era = int(file.read())
+            with open("upgrade_1.txt", "r") as file:
+                upgrade_1 = int(file.read())
+            with open("upgrade_2.txt", "r") as file:
+                upgrade_2 = int(file.read())
+            with open("orbs.txt", "r") as file:
+                pre_orbs = (file.readlines())
+                for line in pre_orbs:
+                    orbs.append(int(line))
+            Loaded = True
+        except:
+            wipe_files()
+
 
 def pytext(text, x, y, font_size, color1, color2):
     font = pygame.font.Font('freesansbold.ttf', font_size)
@@ -142,7 +131,7 @@ def call_orb(orb_level, orby):
     for orb in orb_store:
         if orb_level >= orb["level"] and orbs[orb["orb_num"]-1] < orb["int"]:
             orb_rect.append(orb_store[orb["action#"] - 1])
-        elif orbs[orb["orb_num"] - 1] <= orb["int"]:
+        elif orbs[orb["orb_num"] - 1] >= orb["int"]:
             try:
                 orb_rect.remove(orb_store[orb["action#"] - 1])
             except:
@@ -150,11 +139,11 @@ def call_orb(orb_level, orby):
     orby = 0
     use_orb = []
     for item in orb_rect:
-        pygame.draw.rect(screen, item["color"], pygame.Rect(1400, 100 + orby, 200, 100))
-        pytext(item["Text"], 1500, 125 + orby, item["font"], black, item["color"])
-        pytext(item["subText"], 1500, 150 + orby, item["subfont"], black, item["color"])
-        pytext(f"Costs: {item["cost"]}", 1500, 170 + orby, item["cost_font"], black, item["color"])
-        use_orb.append({"rect": pygame.Rect(1400, 100 + orby, 200, 100), "color": light_blue, "action": f"rect{item["action#"]}_clicked", "cost": item["cost"]})
+        pygame.draw.rect(screen, item["color"], pygame.Rect(1000, 100 + orby, 200, 100))
+        pytext(item["Text"], 1100, 125 + orby, item["font"], black, item["color"])
+        pytext(item["subText"], 1100, 150 + orby, item["subfont"], black, item["color"])
+        pytext(f"Costs: {item["cost"]}", 1100, 170 + orby, item["cost_font"], black, item["color"])
+        use_orb.append({"rect": pygame.Rect(1000, 100 + orby, 200, 100), "color": item["color"], "action": f"rect{item["action#"]}_clicked", "cost": item["cost"]})
         orby += 120
     return use_orb
     
@@ -306,7 +295,7 @@ def main():
             pygame.draw.rect(screen, upgrade_rect[1]["color"], upgrade_rect[1]["rect"])
             pytext(f"Soul Aura: {upgrade_2}", 620, 120, (22-round(upgrade_2**0.01)), black, greyish)
             pytext(f"Strength Base:", 620, 145, 15, black, greyish)
-            pytext(f"Boosts by +1 (+{boost2})", 620, 165, (15-round(boost2**0.01)), black, greyish)
+            pytext(f"+1 per level: (+{boost2})", 620, 165, (15-round(boost2**0.01)), black, greyish)
             pytext(f"Cost: {cost2}", 620, 190, 15, black, greyish)
             orb_level = 1
         if level >= 5:
