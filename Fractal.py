@@ -136,7 +136,7 @@ def pytext(text, x, y, font_size, color1, color2):
 def call_orb(orb_level, orby):
     orb_store = [
         {"subfont": 16, "font": 22, "subText": "Doubles Speed", "Text": "Doubles Speed", "color": light_blue, "action#": 1, "level": 1, "orb_num": 1, "int": 1, "cost": 5000, "cost_font": 18},
-        {"subfont": 16, "font": 22, "subText": "Doubles Speed", "Text": "Doubles Speed", "color": green, "action#": 2, "level": 1, "orb_num": 1, "int": 1, "cost": 5000, "cost_font": 18}
+        {"subfont": 16, "font": 22, "subText": "In Progress", "Text": "In progress", "color": green, "action#": 2, "level": 2, "orb_num": 2, "int": 1, "cost": 50000, "cost_font": 18}
     ]
     orb_rect = []
     for orb in orb_store:
@@ -217,7 +217,7 @@ def main():
             {"rect": pygame.Rect(100, 600, 50, 50), "color": (255 * darker3, 0, 0), "action": "rect3_clicked"}
         ]
         cost1 = (round((upgrade_1 * 10)+10**1.25))
-        cost2 = (round((upgrade_2 + 1)**(2.5+((upgrade_2 + 2)/2))))
+        cost2 = (round((upgrade_2 + 1)**(2.5+((upgrade_2 + 2)/2)))) + 100
         if start == True:
             for rectangle in upgrade_rect:
                 pygame.draw.rect(screen, rectangle["color"], rectangle["rect"])
@@ -309,6 +309,8 @@ def main():
             pytext(f"Boosts by +1 (+{boost2})", 620, 165, (15-round(boost2**0.01)), black, greyish)
             pytext(f"Cost: {cost2}", 620, 190, 15, black, greyish)
             orb_level = 1
+        if level >= 5:
+            orb_level = 2
         
         #------
         pytext(f"Energy: {currency}", 150, 100, (28-round(currency**0.01)), white, black)
