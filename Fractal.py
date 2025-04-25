@@ -244,7 +244,7 @@ def main():
             {"rect": pygame.Rect(100, 500, 50, 50), "color": (0, 255 * darker2, 0), "action": "rect2_clicked"},
             {"rect": pygame.Rect(100, 600, 50, 50), "color": (255 * darker3, 0, 0), "action": "rect3_clicked"}
         ]
-        cost1 = (round((upgrade_1 * 10)+10**1.25))
+        cost1 = (round((upgrade_1 * ((10 + upgrade_1)**1.25))))
         cost2 = (round((upgrade_2 + 1)**(2.5+((upgrade_2 + 2)/2)))) + 100
         if start == True:
             for rectangle in upgrade_rect:
