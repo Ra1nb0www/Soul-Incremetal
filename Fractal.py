@@ -21,6 +21,7 @@ blue = (0, 0, 128)
 black = (0, 0, 0)
 greyish = (170, 170, 170)
 light_blue = (0, 200, 250)
+darker_red = (150, 0, 0)
 red = (200, 0, 0)
 turtle.speed(0)
 turtle.hideturtle()
@@ -202,7 +203,8 @@ def main():
             ]
             menu_rect = [
                 {"rect": pygame.Rect(300, 100, 200, 100), "color": darker_green, "action": "rect1_clicked"},
-                {"rect": pygame.Rect(520, 100, 200, 100), "color": red, "action": "rect2_clicked"}
+                {"rect": pygame.Rect(1000, 100, 200, 100), "color": darker_red, "action": "rect2_clicked"},
+                {"rect": pygame.Rect(520, 100, 200, 100), "color": red, "action": "rect3_clicked"}
             ]
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -213,6 +215,9 @@ def main():
                                 menu = False
                             if item["action"] == "rect2_clicked":
                                 confirmation = True
+                            if item["action"] == "rect3_clicked":
+                                pygame.quit()
+                                sys.exit()
                     for item in confirmation_rect:
                         if item["rect"].collidepoint(mouse_pos):
                             if item["action"] == "rect2_clicked":
@@ -223,8 +228,9 @@ def main():
             screen.fill(background_color)
             for item in menu_rect:
                 pygame.draw.rect(screen, item["color"], item["rect"])
-            pytext(f"Wipe Save", 620, 145, 20, black, red)
-            pytext(f"Start", 400, 145, 25, black, darker_green)
+            pytext(f"Exit", 620, 145, 40, black, red)
+            pytext(f"Start", 400, 145, 37, black, darker_green)
+            pytext(f"Wipe Save", 1100, 150, 30, black, darker_red)
             if confirmation == True:
                 for item in confirmation_rect:
                     pygame.draw.rect(screen, item["color"], item["rect"])
